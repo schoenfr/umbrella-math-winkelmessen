@@ -1,16 +1,17 @@
 import { useRef } from "react"
-import Geodreieck from "./Geodreieck"
+import SetSquare from "./SetSquare"
 import DraggingController, { CanvasItem } from "./DraggingController"
 import AnimatedCanvas from "./AnimatedCanvas"
 import { Exercise } from "./Types"
 
 type Props = {
     exercise: Exercise,
-    geodreieckColor?: string
+    drawingColor?: string,
+    setSquareColor?: string
 }
 
-export default function Visualization({ exercise, geodreieckColor = "yellow" }: Props) {
-    const geodreieck = useRef(new CanvasItem())
+export default function Visualization({ exercise, drawingColor = "#006d77", setSquareColor = "#83c5be" }: Props) {
+    const setSquare = useRef(new CanvasItem())
     const { startAngle, expectedAngle } = exercise
 
     const draw = (context: CanvasRenderingContext2D) => {
@@ -20,12 +21,12 @@ export default function Visualization({ exercise, geodreieckColor = "yellow" }: 
         clearScreen()
         context.translate(width / 2, height / 2) // move to the center of the canvas
         drawWinkel()
-        drawGeodreieck()
+        drawSetSquare()
         context.restore()
 
         function clearScreen() {
             context.clearRect(0, 0, width, height)
-            context.strokeRect(0, 0, width, height)
+//            context.strokeRect(0, 0, width, height)
         }
 
         function drawWinkel() {
@@ -41,7 +42,7 @@ export default function Visualization({ exercise, geodreieckColor = "yellow" }: 
             const vector1 = [Math.cos(fromAngle) * r, Math.sin(fromAngle) * r]
             const vector2 = [Math.cos(toAngle) * r, Math.sin(toAngle) * r]
             context.beginPath()
-            context.strokeStyle = geodreieckColor
+            context.strokeStyle = drawingColor
             context.lineWidth = 2
             context.moveTo(0, 0)
             context.lineTo(vector1[0], vector1[1])
@@ -51,7 +52,7 @@ export default function Visualization({ exercise, geodreieckColor = "yellow" }: 
             context.closePath()
 
             context.beginPath()
-            context.fillStyle = geodreieckColor
+            context.fillStyle = setSquareColor
             context.globalAlpha = 0.4
             context.arc(0, 0, 50, fromAngle, toAngle)
             context.lineTo(0, 0)
@@ -61,14 +62,14 @@ export default function Visualization({ exercise, geodreieckColor = "yellow" }: 
             context.restore()
         }
 
-        function drawGeodreieck() {
+        function drawSetSquare() {
             context.save()
 
             context.setTransform(
                 context
                     .getTransform()
                     // Transformation vom Dragging-Controller anwenden
-                    .multiply(geodreieck.current.transform)
+                    .multiply(setSquare.current.transform)
                     // Realistische Größe wäre eine Skalierung mit 1.6, aber mit 0.9 sieht es erstmal besser aus
                     .scale(0.9, 0.9)
             )
@@ -76,7 +77,7 @@ export default function Visualization({ exercise, geodreieckColor = "yellow" }: 
             // Hintergrundfarbe des Geodreiecks
             context.save()
             context.beginPath()
-            context.fillStyle = geodreieckColor
+            context.fillStyle = setSquareColor
             context.globalAlpha = 0.2
             context.moveTo(-300, 0)
             context.lineTo(300, 0)
@@ -86,7 +87,7 @@ export default function Visualization({ exercise, geodreieckColor = "yellow" }: 
             context.restore()
 
             // Linien des Geodreiecks
-            context.drawImage(Geodreieck, -302, -301)
+            context.drawImage(SetSquare, -302, -301)
 
             context.restore()
         }
@@ -94,7 +95,7 @@ export default function Visualization({ exercise, geodreieckColor = "yellow" }: 
 
     if (draw) {
         return (
-            <DraggingController items={[geodreieck.current]}>
+            <DraggingController items={[setSquare.current]}>
                 <AnimatedCanvas onDraw={draw} />
             </DraggingController>
         )

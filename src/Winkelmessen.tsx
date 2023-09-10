@@ -2,8 +2,9 @@ import { useState } from 'react'
 import styled from 'styled-components'
 import useExercise from './internal/useExercise'
 import Visualization from './internal/Visualization'
-import Eingabeformular from './internal/Eingabeformular'
+import Form from './internal/Form'
 import { Answer, Difficulty, Result } from './internal/Types'
+import Button from './internal/Button'
 
 type Props = {
     /** 0 is very easy, 5 is hard */
@@ -32,29 +33,43 @@ export default function Winkelmessen({ difficulty = 5, onAnswer }: Props) {
 
     return (
         <Wrapper>
+            <Description>
+              Miss den Winkel!
+            </Description>
             <CanvasWrapper>
                 <Visualization exercise={exercise} />
             </CanvasWrapper>
             <Flex>
                 {ergebnis == null && (
-                    <Eingabeformular onSubmit={handleSubmit} />
+                    <Form onSubmit={handleSubmit} />
                 )}
                 {ergebnis != null && (
-                    <EingabeForm as="section">
-                        Der Winkel hat {exercise.expectedAngle} Grad.
-                        Deine Antwort war "{answer?.angle} Grad".
+                    <Report>
+                      <div>
+                        <p>
+                          Der Winkel hat {exercise.expectedAngle} Grad.
+                          Deine Antwort war "{answer?.angle} Grad".
+                        </p>
                         <Feedback>
                             {ergebnis === Result.Correct && ("Richtig! Sehr gut!")}
                             {ergebnis === Result.Almost && ("Fast richtig! Nur 1 Grad daneben.")}
                             {ergebnis === Result.Wrong && ("Leider falsch.")}
                         </Feedback>
-                        <OkayButton onClick={next}>Nochmal</OkayButton>
-                    </EingabeForm>
+                      </div>
+                      <Button type="button" onClick={next}>Nochmal</Button>
+                    </Report>
                 )}
             </Flex>
         </Wrapper>
     )
 }
+
+const Description = styled.p`
+  margin: 15px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+`
 
 const Wrapper = styled.div`
   display: flex;
@@ -64,25 +79,27 @@ const Wrapper = styled.div`
 `
 
 const CanvasWrapper = styled.section`
-  flex: 1;
+  flex: 10;
   min-height: 100px;
+  border: 2px solid #83c5be;
+  border-radius: 5px;
 `
 
-const EingabeForm = styled.form`
+const Report = styled.section`
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  height: 140px;
   gap: 5px;
+
+  width: 100%;
 `
 
-const OkayButton = styled.button`
-  margin-left: 50px;
-`
-
-const Flex = styled.section`
+const Flex = styled.div`
   display: flex;
   justify-content: center;
+  padding: 10px;
+  flex: 2;
+  min-height: 100px;
 `
 
 const Feedback = styled.p`

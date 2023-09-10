@@ -44,4 +44,5 @@ export default function NumberInput({
 const InputField = styled.input`
   width: 4.5rem;
   text-align: center;
+  margin: 0 8px;
 `
